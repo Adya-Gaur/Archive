@@ -13,26 +13,26 @@ void forward()
   digitalWrite(L_IN2, LOW);
   digitalWrite(R_IN1, HIGH);
   digitalWrite(R_IN2, LOW);
-  analogWrite(ENA, 100);
-  analogWrite(ENB, 100);
+  analogWrite(ENA, speed);
+  analogWrite(ENB, speed);
 }
 void turnLeft() 
 {
   digitalWrite(L_IN1, HIGH);
   digitalWrite(L_IN2, LOW);
-  analogWrite(ENA, 70);
+  analogWrite(ENA, 0);
   digitalWrite(R_IN1, HIGH);
   digitalWrite(R_IN2, LOW);
-  analogWrite(EN, 150);
+  analogWrite(ENB, speed);
 }
 void turnRight() 
 {
   digitalWrite(L_IN1, HIGH);
   digitalWrite(L_IN2, LOW);
-  analogWrite(ENA, 150);
+  analogWrite(ENA, speed);
   digitalWrite(R_IN1, HIGH);
   digitalWrite(R_IN2, LOW);
-  analogWrite(ENB, 70);
+  analogWrite(ENB, 0);
 }
 void stopRobot() 
 {
@@ -41,6 +41,14 @@ void stopRobot()
   digitalWrite(R_IN1, LOW);
   digitalWrite(R_IN2, LOW);
 }
+
+void hardBreak()
+{
+  digitalWrite(L_IN1, HIGH);
+  digitalWrite(L_IN2, HIGH);
+  digitalWrite(R_IN1, HIGH);
+  digitalWrite(R_IN2, HIGH);
+}  
 
 // ---------------------------
 
