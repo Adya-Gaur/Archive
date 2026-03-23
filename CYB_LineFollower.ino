@@ -139,56 +139,172 @@ void forward()
 
 void left()
 {
-  analogWrite(ENA,130);
-  analogWrite(ENB,180);
-  digitalWrite(IN1,HIGH);
-  digitalWrite(IN2,LOW);
-  digitalWrite(IN3,LOW);
-  digitalWrite(IN4,HIGH);
+   while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,180);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // back to line
+      break;
+  }
 }
 
 void right()
 {
-  analogWrite(ENA,180);
-  analogWrite(ENB,130);
-  digitalWrite(IN1,HIGH);
-  digitalWrite(IN2,LOW);
-  digitalWrite(IN3,LOW);
-  digitalWrite(IN4,HIGH);
+  while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,180);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // back to line
+      break;
+  }
 }
 
 void sharpLeft()
 {
-  analogWrite(ENA,130);
-  analogWrite(ENB,180);
-  digitalWrite(IN1,LOW);
-  digitalWrite(IN2,HIGH);
-  digitalWrite(IN3,LOW);
-  digitalWrite(IN4,HIGH);
+  while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,LOW);
+    digitalWrite(IN2,HIGH);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // back to line
+      break;
+  }
 }
 
 void sharpRight()
 {
-  analogWrite(ENA,130);
-  analogWrite(ENB,130);
-  digitalWrite(IN1,HIGH);
-  digitalWrite(IN2,LOW);
-  digitalWrite(IN3,HIGH);
-  digitalWrite(IN4,LOW);
+  while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
+
+    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // back to line
+      break;
+  }
 }
 
 void blackEdgeFollower(int s1, int s2, int s3, int s4)
 {
   if(!s1 && !s2 && s3 && s4)
-    right();
+  {
+    while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,180);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if(S1 && S2 && S3 && !S4) //0001
+      break;
+  }
+  }
   else if(s1 && s2 && !s3 && !s4)
-    left();
+  {
+    while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,180);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if(S1 && S2 && S3 && !S4) // back to line
+      break;
+  }
+  }
   else if(!s1 && s2 && s3 && s4)
     forward();
   else if(s1 && !s2 && !s3 && !s4)
-    sharpLeft();
+  {
+    while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,LOW);
+    digitalWrite(IN2,HIGH);
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
+
+    if(S1 && S2 && S3 && !S4) // back to line
+      break;
+  }
+  }
   else if(!s1 && !s2 && !s3 && s4)
-    sharpRight();
+  {
+    while(true)
+  {
+    int S1 = digitalRead(ir_left);
+    int S2 = digitalRead(ir_left_mid);
+    int S3 = digitalRead(ir_right_mid);
+    int S4 = digitalRead(ir_right);
+
+    analogWrite(ENA,130);
+    analogWrite(ENB,130);
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
+
+    if(S1 && S2 && S3 && !S4) // back to line
+      break;
+  }
+  }
 }
 
 void whiteLineFollower(int s1, int s2, int s3, int s4)
@@ -222,10 +338,3 @@ void blackLineFollower(int s1, int s2, int s3, int s4)
   else if(s1 && s2 && s3 && s4)
     sharpRight();
 }
-
-
-
-
-
-  
-  
