@@ -4,7 +4,9 @@ const int ir_left=11, ir_left_mid=12, ir_right_mid=9, ir_right=8;
 const int lspeed=200;
 const int rspeed=200;
 int A = 0, B = 0, C = 0, D = 0;
+int E;
 int s1, s2, s3, s4;
+int previous, current;
 
 void forward();
 void stop();
@@ -36,47 +38,190 @@ void setup()
 
 void loop()
 {
-  while(A == 0 && B == 0 && C == 0 && D == 0)
+  s1 = digitalRead(ir_left);
+  s2 = digitalRead(ir_left_mid);
+  s3 = digitalRead(ir_right_mid);
+  s4 = digitalRead(ir_right);
+
+  current = 1000*s1 + 100*s2 + 10*s1 + s4;
+  
+  E = 1000*A + 100*B + 10*C + D;
+  switch(E)
   {
-    readSensors();
+    case 0000:
     whiteLineFollower(s1, s2, s3, s4);
     if(!s1 && s2 && s3 && !s4)
       A = 1;
-  } // A checkpoint
+    break;
 
-  while(A == 1 && B == 0 && C ==0 && D == 0)
-    {
-      readSensors();
+    case 1000:
       blackLineFollower(s1, s2, s3, s4); //Default
       if(s1 && !s2 && !s3 && s4)
       {
         while(true)
           {
-            readSensors();
-            whileLineFollower(s1, s2, s3, s4);
-            if(!s1 && !s2 && !s3 && !s4) //0000
+            int S1 = digitalRead(ir_left);
+            int S2 = digitalRead(ir_left_mid);
+            int S3 = digitalRead(ir_right_mid);
+            int S4 = digitalRead(ir_right);
+            whiteLineFollower(S1, S2, S3, S4);
+            if(!S1 && !S2 && !S3 && !S4) //0000
               left(); // for Phi
-            if(!s1 && s2 && s3 && !s4) //0110
+            if(!S1 && S2 && S3 && !S4) //0110
               break;
           }
       }
-      if(!s1 && !s2 && !s3 && !s4) //0000
-      {
+      if(s1 && s2 && s3 && s4) //1111
         sharpLeft();
-        B = 1;
-      }
-    } // B checkpoint 
+      if(previous == 0110 && current == 0011)
+        B = 1; // B checkpoint 
+      break;
 
-    while(A == 1 && B == 1 && C ==0 && D == 0)
+    case 1100:
+      blackEdgeFollower(s1, s2, s3, s4);
+      if(previous == 0011 && current == 0110)
       {
-        
+        while(true)
+          {
+            int S1 = digitalRead(ir_left);
+            int S2 = digitalRead(ir_left_mid);
+            int S3 = digitalRead(ir_right_mid);
+            int S4 = digitalRead(ir_right);
+            whileLineFollower(S1, S2, S3, S4);
+            if(previous == 0110 && current == 1100) // C4 to D1
+            {
+              C = 1;
+              break;
+            }
+          }
       }
+      break;
+
+    case 1110:
+    while(true)
+      {
+        int S1 = digitalRead(ir_left);
+        int S2 = digitalRead(ir_left_mid);
+        int S3 = digitalRead(ir_right_mid);
+        int S4 = digitalRead(ir_right);
+        forward();
+        if(S1 && !S2 && !S3 && S4) // 1001
+          break;
+      }
+    whiteLineFollower(s1, s2, s3, s4);
+    break;
+
+    default:
+      stop();
+  }
+    previous = current;
 }
 
+void stop()
+{
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
 
+void forward()
+{
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+}
 
+void left()
+{
+  analogWrite(ENA,130);
+  analogWrite(ENB,180);
+  digitalWrite(IN1,HIGH);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH);
+}
 
+void right()
+{
+  analogWrite(ENA,180);
+  analogWrite(ENB,130);
+  digitalWrite(IN1,HIGH);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH);
+}
 
+void sharpLeft()
+{
+  analogWrite(ENA,130);
+  analogWrite(ENB,180);
+  digitalWrite(IN1,LOW);
+  digitalWrite(IN2,HIGH);
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH);
+}
+
+void sharpRight()
+{
+  analogWrite(ENA,130);
+  analogWrite(ENB,130);
+  digitalWrite(IN1,HIGH);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);
+}
+
+void blackEdgeFollower(int s1, int s2, int s3, int s4)
+{
+  if(!s1 && !s2 && s3 && s4)
+    right();
+  else if(s1 && s2 && !s3 && !s4)
+    left();
+  else if(!s1 && s2 && s3 && s4)
+    forward();
+  else if(s1 && !s2 && !s3 && !s4)
+    sharpLeft();
+  else if(!s1 && !s2 && !s3 && s4)
+    sharpRight();
+}
+
+void whiteLineFollower(int s1, int s2, int s3, int s4)
+{
+  if(s1 && !s2 && !s3 && s4)
+    forward();
+  else if(s1 && !s2 && !s3 && !s4)
+    sharpRight();
+  else if(!s1 && !s2 && s3 && s4)
+    left();
+  else if(!s1 && !s2 && !s3 && s4)
+    sharpLeft();
+  else if(s1 && s2 && !s3 && !s4)
+    right();
+  else if(!s1 && !s2 && !s3 && !s4)
+    sharpRight();
+}
+
+void blackLineFollower(int s1, int s2, int s3, int s4)
+{
+  if(!s1 && s2 && s3 && !s4)
+    forward();
+  else if(!s1 && s2 && s3 && s4)
+    sharpRight();
+  else if(s1 && s2 && s3 && !s4)
+    sharpLeft();
+  else if(s1 && s2 && !s3 && !s4)
+    left();
+  else if(!s1 && !s2 && s3 && s4)
+    right();
+  else if(s1 && s2 && s3 && s4)
+    sharpRight();
+}
 
 
 
