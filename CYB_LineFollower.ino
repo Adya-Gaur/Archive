@@ -43,20 +43,20 @@ void loop()
   s3 = digitalRead(ir_right_mid);
   s4 = digitalRead(ir_right);
 
-  current = 1000*s1 + 100*s2 + 10*s1 + s4;
+  current = 1000*s1 + 100*s2 + 10*s3 + s4;
   
   E = 1000*A + 100*B + 10*C + D;
   switch(E)
   {
     case 0000:
     whiteLineFollower(s1, s2, s3, s4);
-    if(!s1 && s2 && s3 && !s4)
+    if(!s1 && s2 && s3 && !s4) //0110
       A = 1;
     break;
 
     case 1000:
       blackLineFollower(s1, s2, s3, s4); //Default
-      if(s1 && !s2 && !s3 && s4)
+      if(s1 && !s2 && !s3 && s4) //1001
       {
         while(true)
           {
@@ -87,7 +87,7 @@ void loop()
             int S2 = digitalRead(ir_left_mid);
             int S3 = digitalRead(ir_right_mid);
             int S4 = digitalRead(ir_right);
-            whileLineFollower(S1, S2, S3, S4);
+            blackLineFollower(S1, S2, S3, S4);
             if(previous == 0110 && current == 1100) // C4 to D1
             {
               C = 1;
@@ -104,7 +104,29 @@ void loop()
         int S2 = digitalRead(ir_left_mid);
         int S3 = digitalRead(ir_right_mid);
         int S4 = digitalRead(ir_right);
-        forward();
+        if(S1 && S2 && !S3 && !S4) //1100
+          forward();
+        else if(!S1 && !S2 && !S3 && !S4)
+        {
+          while(true)
+          {
+            int S1 = digitalRead(ir_left);
+            int S2 = digitalRead(ir_left_mid);
+            int S3 = digitalRead(ir_right_mid);
+            int S4 = digitalRead(ir_right);
+
+            analogWrite(ENA,130);
+            analogWrite(ENB,130);
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+
+            if(S1 && S2 && !S3 && !S4) // back to line
+            break;
+          }
+        }
+        
         if(S1 && !S2 && !S3 && S4) // 1001
           break;
       }
@@ -153,7 +175,7 @@ void left()
     digitalWrite(IN3,LOW);
     digitalWrite(IN4,HIGH);
 
-    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // back to line
+    if((!S1 && S2 && S3 && !S4)|| (S1 && !S2 && !S3 && S4)) // 10001 or 0110
       break;
   }
 }
